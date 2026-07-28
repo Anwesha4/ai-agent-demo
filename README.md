@@ -1,3 +1,9 @@
+# AI Agent Demo
+
+A simple multi-agent AI pipeline built in Node.js to demonstrate token optimization, debugging techniques, and a basic CI/CD workflow using GitHub Actions.
+
+---
+
 # Part 1 – Token/Cost Optimization
 
 ## Objective
@@ -7,12 +13,13 @@ Reduce token usage in a simple multi-agent AI pipeline while maintaining respons
 ### Pipeline
 
 ```text
-User → Planner → Retriever → Writer → Response
+User → Planner → Retriever → Summarizer → Writer → Response
 ```
 
 * **Planner:** Identifies the user's task.
-* **Retriever:** Fetches relevant context.
-* **Writer:** Generates the final response.
+* **Retriever:** Fetches only the relevant document from the knowledge base.
+* **Summarizer:** Compresses the retrieved context to reduce token usage before passing it to the Writer.
+* **Writer:** Generates the final response using the compressed context.
 
 ---
 
@@ -47,26 +54,26 @@ the Retriever passed the entire knowledge base to the Writer.
 
 ## Optimization 2 – Context Compression (Simulated)
 
-**Problem:** The retrieved document can still be larger than necessary.
+**Problem:** Even after retrieving only the relevant document, the context may still contain unnecessary information.
 
-**Solution:** Compress the retrieved context before passing it to the Writer. In this demo, compression is simulated by reducing the context size. In production, this would typically be replaced with an LLM-based summarization step.
+**Solution:** A Summarizer Agent compresses the retrieved context before passing it to the Writer. In this demo, summarization is simulated by keeping only the first 200 words of the retrieved document. In a production system, this would typically be replaced with an LLM-based summarization step.
 
-| Version            |          Estimated Tokens |
-| ------------------ | ------------------------: |
-| Before Compression |                     2,652 |
-| After Compression  | **<your measured value>** |
+| Version            | Estimated Tokens |
+| ------------------ | ---------------: |
+| Before Compression |            2,652 |
+| After Compression  |          **260** |
 
-**Quality Tradeoff:** Compression reduces token usage further but may omit some details if overused.
+**Quality Tradeoff:** Context compression further reduces token usage but may omit less important details if the summary is too aggressive.
 
 ---
 
 ## Summary
 
-| Stage               |      Estimated Tokens |
-| ------------------- | --------------------: |
-| Original Pipeline   |                11,700 |
-| Relevant Retrieval  |                 2,652 |
-| Context Compression | <your measured value> |
+| Stage               | Estimated Tokens |
+| ------------------- | ---------------: |
+| Original Pipeline   |           11,700 |
+| Relevant Retrieval  |            2,652 |
+| Context Compression |          **260** |
 
 ### Key Takeaways
 
@@ -74,9 +81,7 @@ the Retriever passed the entire knowledge base to the Writer.
 * Context compression can further reduce costs when needed.
 * Together, these techniques make AI pipelines more cost-efficient while maintaining output quality.
 
-
-
-
+---
 
 # Part 2 – Debugging
 
@@ -225,3 +230,45 @@ Although the pipeline completed successfully, the generated response was incorre
 * Logging intermediate outputs makes formatting issues easier to identify.
 * Inspecting retrieved context helps detect silent failures where the pipeline succeeds but produces incorrect results.
 * A stage-by-stage debugging approach is more effective than treating the pipeline as a single black box.
+
+---
+
+# Part 3 – CI/CD Pipeline
+
+## Objective
+
+A GitHub Actions workflow was created to automate testing and simulate deployment whenever code is pushed to the repository.
+
+### Workflow
+
+The workflow performs the following steps:
+
+* Checks out the repository.
+* Sets up the Node.js environment.
+* Installs project dependencies.
+* Runs automated tests.
+* Executes ESLint.
+* Simulates deployment on pushes to the `main` branch.
+
+### Secret Management
+
+Sensitive information should not be stored in the source code. GitHub Secrets can be used to securely manage values such as:
+
+* `OPENAI_API_KEY`
+* `DATABASE_URL`
+* `JWT_SECRET`
+
+These secrets are accessed in workflows using `${{ secrets.SECRET_NAME }}`.
+
+### Rollback Strategy
+
+If a deployment fails:
+
+1. Identify the issue.
+2. Revert to the last stable commit.
+3. Redeploy the stable version.
+4. Verify the application before deploying new changes.
+
+### Outcome
+
+The GitHub Actions workflow was successfully configured. Every push automatically runs the project's tests and ESLint checks, while deployment is simulated to demonstrate a basic CI/CD pipeline.
