@@ -66,8 +66,23 @@ success(`Writer completed (${writerTime} ms)`);
 // ---------------- Final Output ----------------
 
 console.log("\n========== FINAL ANSWER ==========\n");
-
 console.log(answer);
+// console.log("\nRaw Writer Output:");
+// console.log(answer);
+
+// try {
+
+//     const parsed = JSON.parse(answer);
+
+//     console.log(parsed);
+
+// }
+// catch(err){
+
+//     console.log("\n❌ JSON Parsing Failed");
+//     console.log(err.message);
+
+// }
 
 console.log(`\nEstimated Input Tokens: ${afterSummaryTokens}`);
 

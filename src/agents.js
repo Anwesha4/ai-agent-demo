@@ -3,19 +3,19 @@ import { knowledgeBase } from "./sampleData.js";
 
 
 function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
 // Agent 1: Planner
 export async function planner(userQuery) {
-    await delay(200);
-    console.log("\n Planner Agent");
+  await delay(200);
+  console.log("\n Planner Agent");
 
-    return {
-        task: "Answer the user's question using the knowledge base.",
-        userQuery
-    };
+  return {
+    task: "Answer the user's question using the knowledge base.",
+    userQuery
+  };
 }
 
 // Agent 2: Retriever
@@ -34,28 +34,33 @@ export async function planner(userQuery) {
 
 export async function retriever(plan) {
 
-    await delay(300);
-    // await delay(6000);
-    console.log("\nRetriever Agent");
+  await delay(300);
+  // await delay(6000);
+  console.log("\nRetriever Agent");
 
-    let context = "";
+  let context = "";
 
-    const query = plan.userQuery.toLowerCase();
+  const query = plan.userQuery.toLowerCase();
 
-    if (query.includes("oauth")) {
-        context = knowledgeBase.oauth;
-    }
-    else if (query.includes("jwt")) {
-        context = knowledgeBase.jwt;
-    }
-    else if (query.includes("react")) {
-        context = knowledgeBase.react;
-    }
+  if (query.includes("oauth")) {
+    context = knowledgeBase.oauth;
 
-    return {
-        ...plan,
-        context
-    };
+    // //intentional bug
+    // context = knowledgeBase.react;
+  }
+  else if (query.includes("jwt")) {
+    context = knowledgeBase.jwt;
+  }
+  else if (query.includes("react")) {
+    context = knowledgeBase.react;
+  }
+
+  console.log("\nRetrieved Context Preview:");
+console.log(context.substring(0, 120) + "...");
+  return {
+    ...plan,
+    context
+  };
 }
 
 
@@ -65,21 +70,36 @@ export async function retriever(plan) {
 // optimisation 2
 export function summarize(context) {
 
-    console.log("\nSummarizer Agent");
+  console.log("\nSummarizer Agent");
 
-    // Simulate summarization by keeping only the first 200 words
-    return context
-        .split(/\s+/)
-        .slice(0, 200)
-        .join(" ");
+  // Simulate summarization by keeping only the first 200 words
+  return context
+    .split(/\s+/)
+    .slice(0, 200)
+    .join(" ");
 }
 
 // Agent 3: Writer
-export async function writer(data) {
-    await delay(150);
-    console.log("\n Writer Agent");
+// export async function writer(data) {
+//     await delay(150);
+//     console.log("\n Writer Agent");
 
-    return `
+//     return `
+// Question:
+// ${data.userQuery}
+
+// Answer:
+// OAuth allows users to securely authorize applications without sharing passwords.
+// `;
+// }
+
+
+//modified writer
+export async function writer(data) {
+
+  await delay(150);
+
+  return `
 Question:
 ${data.userQuery}
 
