@@ -35,6 +35,7 @@ export async function planner(userQuery) {
 export async function retriever(plan) {
 
     await delay(300);
+    // await delay(6000);
     console.log("\nRetriever Agent");
 
     let context = "";

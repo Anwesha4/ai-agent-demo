@@ -10,17 +10,25 @@ console.log("========== AI PIPELINE ==========");
 
 logStep("Planner");
 
+const plannerStart = Date.now();
+
 const plan = await planner(query);
 
-success("Planner completed");
+const plannerTime = Date.now() - plannerStart;
+
+success(`Planner completed (${plannerTime} ms)`);
 
 // ---------------- Retriever ----------------
 
 logStep("Retriever");
 
+const retrieverStart = Date.now();
+
 const retrieved = await retriever(plan);
 
-success("Retriever completed");
+const retrieverTime = Date.now() - retrieverStart;
+
+success(`Retriever completed (${retrieverTime} ms)`);
 
 // ---------------- Token Analysis ----------------
 
@@ -44,12 +52,16 @@ console.log(`Tokens After Summary: ${afterSummaryTokens}`);
 
 logStep("Writer");
 
+const writerStart = Date.now();
+
 const answer = await writer({
     ...retrieved,
     context: summarizedContext
 });
 
-success("Writer completed");
+const writerTime = Date.now() - writerStart;
+
+success(`Writer completed (${writerTime} ms)`);
 
 // ---------------- Final Output ----------------
 
